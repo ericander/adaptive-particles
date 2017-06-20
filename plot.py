@@ -7,7 +7,7 @@
 #
 # Eric Andersson, 20-06-2017
 #=======================================================================
-def rhopcumdist(xlim = False, ylim = False, xlog = True, ylog = True, filename = False):
+def rhopcumdist(plotdir = './plots/', xlim = False, ylim = False, xlog = True, ylog = True, filename = False):
     """ Plots the cumulative particle density distribution.
 
     Keyword Argument:
@@ -62,6 +62,6 @@ def rhopcumdist(xlim = False, ylim = False, xlog = True, ylog = True, filename =
 
     # Save the plot
     if type(filename) is str:
-        plt.savefig('plots/' + filename + '.pdf', bbox_inches='tight')
+        plt.savefig(plotdir + filename + '.pdf', bbox_inches='tight')
 
     plt.show()
