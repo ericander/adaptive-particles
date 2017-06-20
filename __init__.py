@@ -8,3 +8,4 @@
 # Eric Andersson, 20-06-2017
 #=======================================================================
 from . import plot
+import PencilCode as pc
