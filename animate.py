@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# Last Modification: 30-06-2017, Eric Andersson <eaherrgarden@gmail.com>
+# Last Modification: 03-07-2017, Eric Andersson <eaherrgarden@gmail.com>
 #=======================================================================
 # animate.py
 #
@@ -27,9 +27,6 @@ def grid_density(filename, animdir = './animations/',
             True/False whether to use log scale on x-axis or not.
         ylog
             True/False whether to use log scale on y-axis or not.
-        filename
-            If filename is given as string it will save plot as
-            'filename.pdf'.
 
     """
     # Eric Andersson, 30-06-2017
