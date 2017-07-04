@@ -8,17 +8,19 @@
 # Eric Andersson, 30-06-2017
 #=======================================================================
 
-def grid_density(filename, nframes, animdir = './animations/',
-        xlim = False, ylim = False, xlog = False, ylog = False):
+def grid_density_1D(filename, dim, animdir = './animations/',
+        xlim = None, ylim = None, xlog = None, ylog = None, fps = 24):
     """ Creates an animation of how the grid-density changes in time.
 
     Positional Arguments:
+
         filename
             Name of the output file
-        nframes
-            Number of frames
+        dim
+            Dimension along which rho will be plotted
 
     Keyword Arguments:
+
         xlim
             If limits is of type tuple it will set the x-axis limit
             to the given values.
@@ -29,6 +31,8 @@ def grid_density(filename, nframes, animdir = './animations/',
             True/False whether to use log scale on x-axis or not.
         ylog
             True/False whether to use log scale on y-axis or not.
+        fps
+            Frames per second of video.
 
     """
     # Eric Andersson, 30-06-2017
@@ -39,26 +43,46 @@ def grid_density(filename, nframes, animdir = './animations/',
     import sys, os
 
     # Parameters used in run
+    print("Setting up parameters...")
     param = pc.read.parameters()
     taus = param.taus               # Dimensionless stopping time
     eps = param.eps_dtog            # Local mass density ratio
+    print("Done.")
+
+    # Read in data
+    print("Reading data...")
+    f = pc.read.var()
+    t, rho = pc.read.slices("rhop")
+    print("Done.")
+
+    # Check dimension
+    if dim == 'x':
+        plane = 'xz'
+        dimindex = 0
+        x = f.x
+    elif dim == 'y':
+        plane = 'xy'
+        dimindex = 1
+        x = f.y
+    else:
+        plane = 'xz'
+        dimindex = 1
+        x = f.x
 
     # Set up figure
+    print("Setting up figure...")
     fig  = plt.figure()
-    line, = plt.step([], [],
+    ax = fig.add_subplot(111)
+    line, = ax.step([], [],
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 taus, eps))
     plt.minorticks_on()
-    plt.xlabel('x')
+    plt.xlabel(dim)
     plt.ylabel(r'$\rho$')
-    leg = plt.legend(loc = 'upper left')
+    plt.legend(loc = 'upper right')
 
     # Set up time text
-    plt.draw()
-    p = leg.get_window_extent()
-    time_text = plt.annotate('',
-                (p.p0[0], p.p0[1] - 20), (p.p0[0], p.p0[1]-20),
-                xycoords='figure pixels', zorder = 9)
+    time_text = ax.text(0.02, 0.95, '', transform=ax.transAxes)
 
     # Set axis scales
     if xlog and ylog:
@@ -75,29 +99,26 @@ def grid_density(filename, nframes, animdir = './animations/',
     if type(ylim) is tuple:
         plt.ylim(ylim)
 
+    print("Done.")
+
     # Function that sets up background of each frame
     def init():
         line.set_data([], [])
         time_text.set_text('')
         return line, time_text
 
+
     # Function that is called everytime a new frame is produced
     def animate(i):
-        print("\rAnimating ({:6.1%})......".format(i/nframes),
+        print("\rAnimating ({:6.1%})......".format(i/t.size),
                 end='', flush=True)
-
-        # Prevent pc.read.var() from printing.
-        sys.stdout = open(os.devnull, "w")
-        f = pc.read.var(ivar = i)
-        sys.stdout = sys.__stdout__
-
-        time_text.set_text(r'Time = {0:.2f} $\Omega t$'.format(f.t))
-        line.set_data(f.x, f.rhop[0])
+        time_text.set_text(r'Time = {0:.2f} $\Omega t$'.format(t[i]))
+        line.set_data(x, rho[i][plane][dimindex])
         return line, time_text
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                frames=nframes, interval=1, blit=True)
-    anim.save(filename + '.mp4', fps = 6,
+                                frames=t.size, interval=200, blit=False)
+    anim.save(filename + '.mp4', fps = fps,
             extra_args=['-vcodec', 'libx264'])
     print("Done.")
     plt.show()
