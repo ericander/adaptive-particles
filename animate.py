@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# Last Modification: 03-07-2017, Eric Andersson <eaherrgarden@gmail.com>
+# Last Modification: 04-07-2017, Eric Andersson <eaherrgarden@gmail.com>
 #=======================================================================
 # animate.py
 #
@@ -8,13 +8,15 @@
 # Eric Andersson, 30-06-2017
 #=======================================================================
 
-def grid_density(filename, animdir = './animations/',
+def grid_density(filename, nframes, animdir = './animations/',
         xlim = False, ylim = False, xlog = False, ylog = False):
     """ Creates an animation of how the grid-density changes in time.
 
     Positional Arguments:
         filename
             Name of the output file
+        nframes
+            Number of frames
 
     Keyword Arguments:
         xlim
@@ -33,26 +35,23 @@ def grid_density(filename, animdir = './animations/',
     import PencilCode as pc
     import numpy as np
     import matplotlib.pyplot as plt
-    import matplotlib.animation
+    import matplotlib.animation as animation
+    import sys, os
 
-    # Set up data
-    """ To do!
-    taus =          # Dimensionless stopping time
-    eps =           # Local mass density ratio
-    x =             # Position of grid cells
-    rho =           # Density in grid cells
-    dt =            # Time step of simulation
-    """
+    # Parameters used in run
+    param = pc.read.parameters()
+    taus = param.taus               # Dimensionless stopping time
+    eps = param.eps_dtog            # Local mass density ratio
 
     # Set up figure
     fig  = plt.figure()
     line, = plt.step([], [],
-            label = r'$\tau_s = {taus},\ \epsilon = {eps}$'.format(
+            label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 taus, eps))
     plt.minorticks_on()
     plt.xlabel('x')
     plt.ylabel(r'$\rho$')
-    leg = plt.legend(loc = 'best')
+    leg = plt.legend(loc = 'upper left')
 
     # Set up time text
     plt.draw()
@@ -84,15 +83,22 @@ def grid_density(filename, animdir = './animations/',
 
     # Function that is called everytime a new frame is produced
     def animate(i):
-        print("\rAnimating ({:6.1%})......".format(i/nsteps),
+        print("\rAnimating ({:6.1%})......".format(i/nframes),
                 end='', flush=True)
-        time_text.set_text(r'Time = {0:.2f} $\Omega t$'.format(i*dt))
-        line.set_data(x, rho[i])
+
+        # Prevent pc.read.var() from printing.
+        sys.stdout = open(os.devnull, "w")
+        f = pc.read.var(ivar = i)
+        sys.stdout = sys.__stdout__
+
+        time_text.set_text(r'Time = {0:.2f} $\Omega t$'.format(f.t))
+        line.set_data(f.x, f.rhop[0])
         return line, time_text
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                frames=nsteps, interval=1, blit=True)
-    anim.save(filename + '.mp4', fps = 24,
+                                frames=nframes, interval=1, blit=True)
+    anim.save(filename + '.mp4', fps = 6,
             extra_args=['-vcodec', 'libx264'])
     print("Done.")
+    plt.show()
 #=======================================================================
