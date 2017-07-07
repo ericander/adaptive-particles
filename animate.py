@@ -9,7 +9,8 @@
 #=======================================================================
 
 def grid_density_1D(filename, dim, animdir = './animations/',
-        xlim = None, ylim = None, xlog = None, ylog = None, fps = 24):
+        xlim = None, ylim = None, xlog = None, ylog = None, fps = 24,
+        show_off = False):
     """ Creates an animation of how the grid-density changes in time.
 
     Positional Arguments:
@@ -33,6 +34,8 @@ def grid_density_1D(filename, dim, animdir = './animations/',
             True/False whether to use log scale on y-axis or not.
         fps
             Frames per second of video.
+        show_off
+            If true, turns off playing the animation after finilizing
 
     """
     # Eric Andersson, 30-06-2017
@@ -120,10 +123,13 @@ def grid_density_1D(filename, dim, animdir = './animations/',
     anim.save(filename + '.mp4', fps = fps,
             extra_args=['-vcodec', 'libx264'])
     print("Done.")
-    plt.show()
+    if show_off:
+        plt.clear()
+    else:
+        plt.show()
 #=======================================================================
 
-def cumulative_rhop_2D(animdir = './animations/', xlim = None, ylim = None, xlog = True, ylog = True, filename = 'animation', fps = 24):
+def cumulative_rhop_2D(animdir = './animations/', xlim = None, ylim = None, xlog = True, ylog = True, filename = 'animation', fps = 24, show_off = False):
     """ Plots the cumulative particle density distribution.
 
     Keyword Argument:
@@ -143,6 +149,8 @@ def cumulative_rhop_2D(animdir = './animations/', xlim = None, ylim = None, xlog
             Name of output file.
         fps
             Frames per second in animation
+        show_off
+            If true, turns off playing the animation after finilizing
 
     """
     # Eric Andersson, 06-07-2017
@@ -234,12 +242,15 @@ def cumulative_rhop_2D(animdir = './animations/', xlim = None, ylim = None, xlog
     anim.save(animdir + filename + '.mp4', fps = fps,
             extra_args=['-vcodec', 'libx264'])
     print("Done.")
-    plt.show()
+    if show_off:
+        plt.clear()
+    else:
+        plt.show()
 
 #======================================================================
 def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
         ylim = (0, 600), xlog = False, ylog = False,
-        filename = 'animation', fps = 24):
+        filename = 'animation', fps = 24, show_off = False):
     """ Plots the cumulative particle density distribution.
 
     Keyword Argument:
@@ -259,7 +270,8 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
             Name of output file.
         fps
             Frames per second in animation
-
+        show_off
+            If true, turns off playing the animation after finilizing
     """
     # Eric Andersson, 06-07-2017
     import PencilCode as pc
@@ -381,6 +393,9 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
     anim.save(animdir + filename + '.mp4', fps = fps,
             extra_args=['-vcodec', 'libx264'])
     print("Done.")
-    plt.show()
+    if show_off:
+        plt.clear()
+    else:
+        plt.show()
 
 #======================================================================
