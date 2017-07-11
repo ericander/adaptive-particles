@@ -478,16 +478,16 @@ def rhop_histogram_3D(tmax, animdir = './animations/',
             plt.xscale('log')
         elif ylog:
             plt.yscale('log')
-        # Set up time text
-        time_text = ax.text(0.75, 0.95,
-            r'Time = {0:.2f} $\Omega t$'.format(t[0]),
-            transform=ax.transAxes)
         sys.stdout = open(os.devnull, 'w')
-        rhop = pc.read.var('rhop', ivar = 0)
+        f = pc.read.var(ivar = 0)
         sys.stdout = sys.__stdout__
         ax.hist(np.concatenate(np.concatenate(
-                    rhop))/np.mean(rhop),
+                    f.rhop))/np.mean(f.rhop),
                 bins = bins)
+        # Set up time text
+        time_text = ax.text(0.75, 0.95,
+            r'Time = {0:.2f} $\Omega t$'.format(f.t),
+            transform=ax.transAxes)
 
     # Function that is called everytime a new frame is produced
     def animate(i):
@@ -516,17 +516,17 @@ def rhop_histogram_3D(tmax, animdir = './animations/',
         ax.text(0.75, 0.85, r'$\tau_s = {},\ \epsilon = {}$'.format(
                 taus, eps), transform=ax.transAxes)
         ax.text(0.75, 0.95,
-            r'Time = {0:.2f} $\Omega t$'.format(t[i]),
+            r'Time = {0:.2f} $\Omega t$'.format(f.t),
             transform=ax.transAxes)
         ax.hist(np.concatenate(
-            np.concatenate(f.rhop))/np.mean(rhop),
+            np.concatenate(f.rhop))/np.mean(f.rhop),
                 bins = bins)
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
                                 frames=int(tmax/dsnap), interval=200,
                                 blit=False, repeat = False)
     anim.save(animdir + filename + '.mp4', fps = fps,
-            extra_args=['-vcodec', 'libx264'])
+            writer='imagemagick', extra_args=['-vcodec', 'libx264'])
     print("Done.")
     if show_off:
         plt.clear()
