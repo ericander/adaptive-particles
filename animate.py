@@ -279,13 +279,12 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
     import matplotlib.pyplot as plt
     import matplotlib.animation as animation
 
-    ### WARNING ###
     # ONLY WORKS IN 2D SIMULATIONS!
     dim = pc.read.dimensions()
     ndim = (dim.nxgrid > 1) + (dim.nygrid > 1) + (dim.nzgrid > 1)
     if ndim == 3:
         raise NotImplementedError(
-                "More than 2 dimensions is not implemented yet")
+                "For 3D use animate.rhop_histogram_3D")
 
     # Import and set-up data from the pencil-code
     print("Reading and setting up data")
@@ -312,6 +311,18 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
     ax = fig.add_subplot(111)
     print("Done.")
 
+    # Set up axis
+    if ylog:
+        ax.set_yscale('log')
+    if type(xlim) is tuple:
+        if xlog:
+            bins = np.logspace(np.log10(xlim[0]),
+                                    np.log10(xlim[1]), 50)
+        else:
+            bins = np.linspace(xlim[0], xlim[1], 50)
+    else:
+        bins = 'auto'
+
     # Function that sets up background of each frame
     def init():
         ax.text(0.75, 0.85, r'$\tau_s = {},\ \epsilon = {}$'.format(
@@ -333,19 +344,9 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
         time_text = ax.text(0.75, 0.95,
             r'Time = {0:.2f} $\Omega t$'.format(t[0]),
             transform=ax.transAxes)
-        if type(xlim) is tuple:
-            if xlog:
-                bins = np.logspace(np.log10(xlim[0]),
-                                    np.log10(xlim[1]), 50)
-            else:
-                bins = np.linspace(xlim[0], xlim[1], 50)
-            ax.hist(np.concatenate(
-                rhop[0]['xz'])/np.mean(rhop[0][plane]),
+        ax.hist(np.concatenate(
+                    rhop[0]['xz'])/np.mean(rhop[0][plane]),
                 bins = bins)
-        else:
-            ax.hist(np.concatenate(
-                rhop[0]['xz'])/np.mean(rhop[0][plane]),
-                bins = 'auto')
 
     # Function that is called everytime a new frame is produced
     def animate(i):
@@ -372,20 +373,9 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
         ax.text(0.75, 0.95,
             r'Time = {0:.2f} $\Omega t$'.format(t[i]),
             transform=ax.transAxes)
-        if type(xlim) is tuple:
-            if xlog:
-                bins = np.logspace(np.log10(xlim[0]),
-                                    np.log10(xlim[1]), 50)
-            else:
-                bins = np.linspace(xlim[0], xlim[1], 50)
-            ax.hist(np.concatenate(
-                rhop[i]['xz'])/np.mean(rhop[i][plane]),
+        ax.hist(np.concatenate(
+                        rhop[i]['xz'])/np.mean(rhop[i][plane]),
                 bins = bins)
-        else:
-            ax.hist(np.concatenate(
-                rhop[i]['xz'])/np.mean(rhop[i][plane]),
-                bins = 'auto')
-
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
                                 frames=t.size, interval=200,
