@@ -7,7 +7,7 @@
 #
 # Eric Andersson, 20-06-2017
 #=======================================================================
-def rhopcumdist(plotdir = './plots/', xlim = False, ylim = False, xlog = True, ylog = True, filename = False):
+def cumulative_density(plotdir = './plots/', xlim = False, ylim = False, xlog = True, ylog = True, filename = False):
     """ Plots the cumulative particle density distribution.
 
     Keyword Argument:
@@ -68,7 +68,7 @@ def rhopcumdist(plotdir = './plots/', xlim = False, ylim = False, xlog = True, y
 
 #======================================================================
 
-def cum_dens_dist_taverage(t0, t,
+def cumulative_density_mean(t0, t,
         datadir = './runs/', plotdir = './plots/',
     xlim = (1e-3, 1e3), ylim = (1e-5, 1e0), xlog = True, ylog = True,
     filename = None):
@@ -167,7 +167,7 @@ def cum_dens_dist_taverage(t0, t,
 
 #======================================================================
 
-def time_averaged_density_histogram(t0, t,
+def density_histogram_mean(t0, t,
         datadir = './runs/', plotdir = './plots/',
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = None):

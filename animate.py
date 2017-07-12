@@ -129,7 +129,7 @@ def grid_density_1D(filename, dim, animdir = './animations/',
         plt.show()
 #=======================================================================
 
-def cumulative_rhop_2D(animdir = './animations/', xlim = None, ylim = None, xlog = True, ylog = True, filename = 'animation', fps = 24, show_off = False):
+def cumulative_density_2D(animdir = './animations/', xlim = None, ylim = None, xlog = True, ylog = True, filename = 'animation', fps = 24, show_off = False):
     """ Plots the cumulative particle density distribution.
 
     Keyword Argument:
@@ -248,7 +248,7 @@ def cumulative_rhop_2D(animdir = './animations/', xlim = None, ylim = None, xlog
         plt.show()
 
 #======================================================================
-def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
+def density_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
         ylim = (0, 600), xlog = False, ylog = False,
         filename = 'animation', fps = 24, show_off = False):
     """ Plots the cumulative particle density distribution.
@@ -390,7 +390,7 @@ def rhop_histogram_2D(animdir = './animations/', xlim = (0.01, 10),
 
 #======================================================================
 
-def rhop_histogram_3D(tmax, animdir = './animations/',
+def density_histogram_3D(tmax, animdir = './animations/',
         xlim = (0.01, 10), ylim = (0, 600), xlog = False, ylog = False,
         filename = 'animation', fps = 24, show_off = False, dsnap = 1):
     """ Plots the cumulative particle density distribution.
