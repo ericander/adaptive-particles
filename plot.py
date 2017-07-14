@@ -301,3 +301,149 @@ def density_histogram_mean(t0, t,
     if type(filename) is str:
             plt.savefig(plotdir + filename + '_std.pdf', bbox_inches='tight')
     plt.show()
+
+#=======================================================================
+
+def rhop_histogram(t0 = 50, t = 150,
+    plotdir = './lunarc/nobackup/user/ericand/plots/',
+    xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
+    filename = 'rhop_histogram', add_std = False):
+    """ Plots the average number of gridcells with certain density in a
+    histogram. This function is mean for plotting data from Nonlinear
+    Streaming instability simulations and defaults to data stored on
+    ccyang's lunarc directory for these kind of simulations.
+
+    Positional Arguments:
+
+    Keyword Arguments:
+        datadir
+            Directory of data files.
+        plotdir
+            Directory for saving plots
+        xlim
+            If limits is of type tuple it will set the x-axis limit
+            to the given values.
+        ylim
+            If limits is of type tuple it will set the y-axis limit
+            to the given values.
+        xlog
+            True/False whether to use log scale on x-axis or not.
+        ylog
+            True/False whether to use log scale on y-axis or not.
+        filename
+            If filename is given as string it will save plot as
+            'filename.pdf'.
+    """
+    # Eric Andersson, 13-07-2017
+    import PencilCode as pc
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # Set up plot
+    fig = plt.figure()
+    plt.minorticks_on()
+    plt.xlabel(r"$\rho_p/<\rho_p>$")
+    plt.ylabel(r"$N({\rho_p})$")
+
+    # Set up axis
+    if xlog and ylog:
+        plt.xscale('log')
+        plt.yscale('log')
+    elif xlog:
+        plt.xscale('log')
+    elif ylog:
+        plt.yscale('log')
+    if type(xlim) is tuple:
+        if xlog:
+            bins = np.logspace(np.log10(xlim[0]),
+                                    np.log10(xlim[1]), 50)
+        else:
+            bins = np.linspace(xlim[0], xlim[1], 50)
+    else:
+        bins = 'auto'
+
+    # Initialte needed variables
+    data = {}
+    ndata = -1
+
+    # Read in data
+    print('Starting process of reading in data...')
+    done = ''
+    while done != 'no':
+        ndata += 1
+        datadir = input('Please give directory for data: ')
+        param = pc.read.parameters(datadir=datadir)
+        rhop, std = _create_density_histogram(t0, t, datadir, bins)
+        data[ndata] = [rhop, std, param.taus, param.eps_dtog]
+        done = input('Do you wish to add more data? (yes/no): ')
+
+    for i in range(0, ndata+1):
+        if add_std:
+            plt.fill_between(bins[:-1], data[i][0]-data[i][1],
+                    data[i][0] + data[i][1], step='pre', color='grey')
+        plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 2,
+            label = r'$\tau_s = {},\ \epsilon = {}$'.format(
+                data[i][2], data[i][3]), zorder=9)
+
+    plt.legend(loc='best')
+
+    # Save the plot
+    if type(filename) is str:
+            plt.savefig(plotdir + filename + '.pdf',
+                    bbox_inches='tight')
+    plt.show()
+
+#=======================================================================
+# LOCAL FUNCTIONS
+#=======================================================================
+
+def _create_density_histogram(t0, nt, datadir, bins):
+    """ Local function for creating a density histogram of pencil code
+    data.
+
+    Keyword Arguments:
+        t0
+            Number of timesteps for warmup
+        nt
+            Number of timesteps for average
+        datadir
+            Directory for locating data
+        bins
+            Shape of the histogram-bins
+
+    Return Values
+        mean
+            Binned averaged density
+        sigma
+            Standard deviation of the average
+    """
+    # Eric Andersson, 13-07-2017
+    import numpy as np
+    import PencilCode as pc
+    import sys, os
+    from scipy.integrate import simps
+
+    # Allocate memory
+    Nrhop = np.zeros((nt, bins.size - 1))
+    t = np.zeros(nt)
+
+    for i in range(t0, t0+nt):
+        f = pc.read.var(datadir = datadir, ivar = i)
+        dim = pc.read.dimensions(datadir = datadir)
+        ndim = (dim.nxgrid > 1) + (dim.nygrid > 1) + (dim.nzgrid > 1)
+        if ndim == 1:
+            Nrhop[i-t0][:] = np.histogram(f.rhop/np.mean(f.rhop),
+                                bins = bins)[0]
+        elif ndim == 2:
+            Nrhop[i-t0][:] = np.histogram(np.concatenate(
+                                            f.rhop/np.mean(f.rhop)),
+                                bins = bins)[0]
+        else:
+            Nrhop[i-t0][:] = np.histogram(np.concatenate(np.concatenate(
+                                            f.rhop/np.mean(f.rhop))),
+                                bins = bins)[0]
+        t[i-t0] = f.t
+
+    mean = simps(y=Nrhop, x=t, axis=0)/(t[-1] - t[0])
+    sigma2 = simps(y=Nrhop**2, x=t, axis=0)/(t[-1] - t[0]) - mean**2
+    return mean, np.sqrt(sigma2)
