@@ -304,7 +304,7 @@ def density_histogram_mean(t0, t,
 
 #=======================================================================
 
-def rhop_histogram(t0 = 50, t = 150,
+def rhop_histogram(t0 = 25, t = 70,
     plotdir = './lunarc/nobackup/user/ericand/plots/',
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = 'rhop_histogram', add_std = False):
@@ -379,8 +379,9 @@ def rhop_histogram(t0 = 50, t = 150,
 
     for i in range(0, ndata+1):
         if add_std:
+            col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
-                    data[i][0] + data[i][1], step='pre', color='grey')
+                    data[i][0] + data[i][1], step='pre', color=col)
         plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 2,
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3]), zorder=9)
