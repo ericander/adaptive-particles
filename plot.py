@@ -161,7 +161,7 @@ def cumulative_density(t0=25, t=70,
 def rhop_histogram(t0 = 25, t = 70,
     plotdir = './work/plots/',
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
-    filename = 'rhop_histogram', add_std = False, normal = False):
+    filename = 'rhop_histogram', add_std = False, normed = False):
     """ Plots an average of number of gridcells with certain density in
     a histogram. The function plots data from Nonlinear Streaming
     instability simulations.
@@ -190,7 +190,7 @@ def rhop_histogram(t0 = 25, t = 70,
             'filename.pdf'.
         add_std
             Adds standard devtiation to the plotted lines.
-        normal
+        normed
             Set True to create normalized histogram.
     """
     # Eric Andersson, 13-07-2017
@@ -238,7 +238,7 @@ def rhop_histogram(t0 = 25, t = 70,
             except FileNotFoundError:
                 print('The directory does not exist. Try again.')
         rhop, std = _create_density_histogram(t0, t,
-                                        datadir, bins, normal)
+                                        datadir, bins, normed)
         data[ndata] = [rhop, std, param.taus, param.eps_dtog]
         done = input('Do you wish to add more data? (yes/no): ')
 
@@ -264,7 +264,7 @@ def rhop_histogram(t0 = 25, t = 70,
 # LOCAL FUNCTIONS
 #=======================================================================
 
-def _create_density_histogram(t0, nt, datadir, bins, normal):
+def _create_density_histogram(t0, nt, datadir, bins, normed):
     """ Local function for creating a density histogram of pencil code
     data.
 
@@ -277,7 +277,7 @@ def _create_density_histogram(t0, nt, datadir, bins, normal):
             Directory for locating data
         bins
             Shape of the histogram-bins
-        normal
+        normed
             If True, then plot histogram will be normalized
     Return Values
         mean
@@ -301,15 +301,15 @@ def _create_density_histogram(t0, nt, datadir, bins, normal):
         f = pc.read.var(datadir = datadir, ivar = t0+i)
         if ndim == 1:
             Nrhop[i][:] = np.histogram(f.rhop/np.mean(f.rhop),
-                                bins = bins, density=normal)[0]
+                                bins = bins, normed=normed)[0]
         elif ndim == 2:
             Nrhop[i][:] = np.histogram(np.concatenate(
                                             f.rhop/np.mean(f.rhop)),
-                                bins = bins, density=normal)[0]
+                                bins = bins, normed=normed)[0]
         else:
             Nrhop[i][:] = np.histogram(np.concatenate(np.concatenate(
                                             f.rhop/np.mean(f.rhop))),
-                                bins = bins, denisty=normal)[0]
+                                bins = bins, normed=normed)[0]
         t[i] = f.t
 
     mean = simps(y=Nrhop, x=t, axis=0)/(t[-1] - t[0])
