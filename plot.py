@@ -161,7 +161,7 @@ def cumulative_density(t0=25, t=70,
 def rhop_histogram(t0 = 25, t = 70,
     plotdir = './work/plots/',
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
-    filename = 'rhop_histogram', add_std = False):
+    filename = 'rhop_histogram', add_std = False, normal = False):
     """ Plots an average of number of gridcells with certain density in
     a histogram. The function plots data from Nonlinear Streaming
     instability simulations.
@@ -188,6 +188,10 @@ def rhop_histogram(t0 = 25, t = 70,
         filename
             If filename is given as string it will save plot as
             'filename.pdf'.
+        add_std
+            Adds standard devtiation to the plotted lines.
+        normal
+            Set True to create normalized histogram.
     """
     # Eric Andersson, 13-07-2017
     import PencilCode as pc
@@ -233,7 +237,8 @@ def rhop_histogram(t0 = 25, t = 70,
                 break
             except FileNotFoundError:
                 print('The directory does not exist. Try again.')
-        rhop, std = _create_density_histogram(t0, t, datadir, bins)
+        rhop, std = _create_density_histogram(t0, t,
+                                        datadir, bins, normal)
         data[ndata] = [rhop, std, param.taus, param.eps_dtog]
         done = input('Do you wish to add more data? (yes/no): ')
 
@@ -259,7 +264,7 @@ def rhop_histogram(t0 = 25, t = 70,
 # LOCAL FUNCTIONS
 #=======================================================================
 
-def _create_density_histogram(t0, nt, datadir, bins):
+def _create_density_histogram(t0, nt, datadir, bins, normal):
     """ Local function for creating a density histogram of pencil code
     data.
 
@@ -272,7 +277,8 @@ def _create_density_histogram(t0, nt, datadir, bins):
             Directory for locating data
         bins
             Shape of the histogram-bins
-
+        normal
+            If True, then plot histogram will be normalized
     Return Values
         mean
             Binned averaged density
@@ -295,15 +301,15 @@ def _create_density_histogram(t0, nt, datadir, bins):
         f = pc.read.var(datadir = datadir, ivar = t0+i)
         if ndim == 1:
             Nrhop[i][:] = np.histogram(f.rhop/np.mean(f.rhop),
-                                bins = bins)[0]
+                                bins = bins, density=normal)[0]
         elif ndim == 2:
             Nrhop[i][:] = np.histogram(np.concatenate(
                                             f.rhop/np.mean(f.rhop)),
-                                bins = bins)[0]
+                                bins = bins, density=normal)[0]
         else:
             Nrhop[i][:] = np.histogram(np.concatenate(np.concatenate(
                                             f.rhop/np.mean(f.rhop))),
-                                bins = bins)[0]
+                                bins = bins, denisty=normal)[0]
         t[i] = f.t
 
     mean = simps(y=Nrhop, x=t, axis=0)/(t[-1] - t[0])
