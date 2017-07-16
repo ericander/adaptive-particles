@@ -242,18 +242,11 @@ def rhop_histogram(t0 = 25, t = 70,
         if add_std:
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
-<<<<<<< HEAD
                     data[i][0] + data[i][1], step='pre', alpha = 0.3)
         plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 1,
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3]), zorder=9)
 
-=======
-                    data[i][0] + data[i][1], step='pre', alpha = 0.5)
-        plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 1,
-            label = r'$\tau_s = {},\ \epsilon = {}$'.format(
-                data[i][2], data[i][3]), zorder=9)
->>>>>>> 19c0508ffe3679c7540ac99c2087aba1cd2bd5a2
     plt.legend(loc='best')
 
     # Save and show the plot
