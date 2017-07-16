@@ -159,7 +159,7 @@ def cumulative_density(t0=25, t=70,
 #======================================================================
 
 def rhop_histogram(t0 = 25, t = 70,
-    plotdir = './lunarc/nobackup/user/ericand/plots/',
+    plotdir = './work/plots/',
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = 'rhop_histogram', add_std = False):
     """ Plots an average of number of gridcells with certain density in
