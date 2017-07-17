@@ -247,13 +247,13 @@ def rhop_histogram(t0 = 25, t = 70,
     # Write data to plot.
     for i in data:
         if label == 'resolution':
-            g = pc.read.grid()
+            g = pc.read.grid(datadir=datadir)
             label = r'${}\times{}$'.format(g.x.size-6, g.z.size-6)
         elif label == 'parameters':
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3])
         else:
-            g = pc.read.grid()
+            g = pc.read.grid(datadir=datadir)
             label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{}$'.format(
                 data[i][2], data[i][3], g.x.size-6, g.z.size-6)
         if add_std:
