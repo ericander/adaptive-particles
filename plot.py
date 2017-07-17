@@ -159,7 +159,7 @@ def cumulative_density(t0=25, t=70,
 #======================================================================
 
 def rhop_histogram(t0 = 25, t = 70,
-    plotdir = './work/plots/',
+    plotdir = './work/plots/', label = None,
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = 'rhop_histogram', add_std = False, normal = False):
     """ Plots an average of number of gridcells with certain density in
@@ -175,6 +175,8 @@ def rhop_histogram(t0 = 25, t = 70,
             Directory of data files.
         plotdir
             Directory for saving plots
+        label
+            Specify whether to use resolution for label, or parameters.
         xlim
             If limits is of type tuple it will set the x-axis limit
             to the given values.
@@ -244,15 +246,24 @@ def rhop_histogram(t0 = 25, t = 70,
 
     # Write data to plot.
     for i in data:
+        if label == 'resolution':
+            g = pc.read.grid()
+            label = r'${}\times{}$'.format(g.x.size-6, g.z.size-6)
+        elif label == 'parameters':
+            label = r'$\tau_s = {},\ \epsilon = {}$'.format(
+                data[i][2], data[i][3])
+        else:
+            g = pc.read.grid()
+            label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{}$'.format(
+                data[i][2], data[i][3], g.x.size-6, g.z.size-6)
         if add_std:
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
                     data[i][0] + data[i][1], step='pre', alpha = 0.3)
         plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 1,
-            label = r'$\tau_s = {},\ \epsilon = {}$'.format(
-                data[i][2], data[i][3]), zorder=9)
+                label = label, zorder=9)
 
-    plt.legend(loc='best')
+        plt.legend(loc='best', prop = {'size':10}, frameon=False)
 
     # Save and show the plot
     if type(filename) is str:
