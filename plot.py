@@ -159,7 +159,7 @@ def cumulative_density(t0=25, t=70,
 #======================================================================
 
 def rhop_histogram(t0 = 25, t = 70,
-    plotdir = './work/plots/', label = None,
+    plotdir = './work/plots/', setlabel = None,
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = 'rhop_histogram', add_std = False, normed = False):
     """ Plots an average of number of gridcells with certain density in
@@ -175,7 +175,7 @@ def rhop_histogram(t0 = 25, t = 70,
             Directory of data files.
         plotdir
             Directory for saving plots
-        label
+        setlabel
             Specify whether to use resolution for label, or parameters.
         xlim
             If limits is of type tuple it will set the x-axis limit
@@ -248,9 +248,9 @@ def rhop_histogram(t0 = 25, t = 70,
 
     # Write data to plot.
     for i in data:
-        if label == 'resolution':
+        if setlabel == 'resolution':
             label = r'${}\times{}$'.format(data[i][4][0], data[i][4][1])
-        elif label == 'parameters':
+        elif setlabel == 'parameters':
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3])
         else:
