@@ -241,7 +241,7 @@ def rhop_histogram(t0 = 25, t = 70,
             except FileNotFoundError:
                 print('The directory does not exist. Try again.')
         rhop, std = _create_density_histogram(t0, t,
-                                        datadir, bins, normal)
+                                        datadir, bins, normed)
         res = [g.x.size-6, g.z.size-6]
         data[ndata] = [rhop, std, param.taus, param.eps_dtog, res]
         done = input('Do you wish to add more data? (yes/no): ')
