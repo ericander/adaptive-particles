@@ -236,26 +236,26 @@ def rhop_histogram(t0 = 25, t = 70,
             try:
                 datadir = input('Please give directory for data: ')
                 param = pc.read.parameters(datadir=datadir)
+                g = pc.read.grid(datadir=datadir)
                 break
             except FileNotFoundError:
                 print('The directory does not exist. Try again.')
         rhop, std = _create_density_histogram(t0, t,
-                                        datadir, bins, normed)
-        data[ndata] = [rhop, std, param.taus, param.eps_dtog]
+                                        datadir, bins, normal)
+        res = [g.x.size-6, g.z.size-6]
+        data[ndata] = [rhop, std, param.taus, param.eps_dtog, res]
         done = input('Do you wish to add more data? (yes/no): ')
 
     # Write data to plot.
     for i in data:
         if label == 'resolution':
-            g = pc.read.grid(datadir=datadir)
-            label = r'${}\times{}$'.format(g.x.size-6, g.z.size-6)
+            label = r'${}\times{}$'.format(data[i][4][0], data[i][4][1])
         elif label == 'parameters':
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3])
         else:
-            g = pc.read.grid(datadir=datadir)
             label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{}$'.format(
-                data[i][2], data[i][3], g.x.size-6, g.z.size-6)
+                data[i][2], data[i][3], data[i][4][0], data[i][4][1])
         if add_std:
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
