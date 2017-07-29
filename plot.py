@@ -256,7 +256,7 @@ def rhop_histogram(t0 = 25, t = 70,
         elif setlabel == 'parameters':
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3])
-        elif setlabel == 'np'
+        elif setlabel == 'np':
             label = r'$np = {}$'.format(data[6])
         else:
             label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{}$'.format(
