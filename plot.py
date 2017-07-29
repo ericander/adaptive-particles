@@ -199,12 +199,16 @@ def rhop_histogram(t0 = 25, t = 70,
     import PencilCode as pc
     import numpy as np
     import matplotlib.pyplot as plt
+    import AdaptiveParticles as ap
 
     # Set up plot
     fig = plt.figure()
     plt.minorticks_on()
     plt.xlabel(r"$\rho_p/<\rho_p>$")
-    plt.ylabel(r"$N({\rho_p})$")
+    if normed = True:
+        plt.ylabel(r'$N(\rho_p)/N_{tot}$')
+    else:
+        plt.ylabel(r"$N({\rho_p})$")
 
     # Set up axis
     if xlog and ylog:
@@ -214,14 +218,11 @@ def rhop_histogram(t0 = 25, t = 70,
         plt.xscale('log')
     elif ylog:
         plt.yscale('log')
-    if type(xlim) is tuple:
-        if xlog:
-            bins = np.logspace(np.log10(xlim[0]),
+    if xlog:
+        bins = np.logspace(np.log10(xlim[0]),
                                     np.log10(xlim[1]), 50)
-        else:
-            bins = np.linspace(xlim[0], xlim[1], 50)
     else:
-        bins = 'auto'
+        bins = np.linspace(xlim[0], xlim[1], 50)
 
     # Initiate variables
     data = {}
@@ -235,15 +236,17 @@ def rhop_histogram(t0 = 25, t = 70,
         while True:
             try:
                 datadir = input('Please give directory for data: ')
-                param = pc.read.parameters(datadir=datadir)
+                p = pc.read.parameters(datadir=datadir)
+                pd = pc.read.pardim(datadir=datadir)
                 g = pc.read.grid(datadir=datadir)
                 break
             except FileNotFoundError:
                 print('The directory does not exist. Try again.')
-        rhop, std = _create_density_histogram(t0, t,
+        rhop, std = ap.compute.rhop_histogram(t0,
                                         datadir, bins, normed)
         res = [g.x.size-6, g.z.size-6]
-        data[ndata] = [rhop, std, param.taus, param.eps_dtog, res]
+        npar = pd.npar / (res[0] * res[1])
+        data[ndata] = [rhop, std, p.taus, p.eps_dtog, res, npar]
         done = input('Do you wish to add more data? (yes/no): ')
 
     # Write data to plot.
@@ -253,6 +256,8 @@ def rhop_histogram(t0 = 25, t = 70,
         elif setlabel == 'parameters':
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3])
+        elif setlabel == 'np'
+            label = r'$np = {}$'.format(data[6])
         else:
             label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{}$'.format(
                 data[i][2], data[i][3], data[i][4][0], data[i][4][1])
@@ -369,4 +374,6 @@ def _cumulative_distribution(t0, nt, datadir):
     sigma2 = simps(y=Prhop**2, x=t, axis=0)/(t[-1] - t[0]) - mean**2
 
     return mean, np.sqrt(sigma2)
+
+#=======================================================================
 

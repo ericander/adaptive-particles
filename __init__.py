@@ -9,4 +9,5 @@
 #=======================================================================
 from . import plot
 from . import animate
+from . import compute
 import PencilCode as pc
