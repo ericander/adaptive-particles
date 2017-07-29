@@ -205,7 +205,7 @@ def rhop_histogram(t0 = 25, t = 70,
     fig = plt.figure()
     plt.minorticks_on()
     plt.xlabel(r"$\rho_p/<\rho_p>$")
-    if normed = True:
+    if normed == True:
         plt.ylabel(r'$N(\rho_p)/N_{tot}$')
     else:
         plt.ylabel(r"$N({\rho_p})$")
