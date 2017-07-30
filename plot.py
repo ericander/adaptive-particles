@@ -158,7 +158,7 @@ def cumulative_density(t0=25, t=70,
 
 #======================================================================
 
-def rhop_histogram(t0 = 25, t = 70,
+def rhop_histogram(t0 = 25, plane = 'xz',
     plotdir = './work/plots/', setlabel = None,
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = 'rhop_histogram', add_std = False, normed = False):
@@ -169,8 +169,8 @@ def rhop_histogram(t0 = 25, t = 70,
     Keyword Arguments:
         t0
             Initial timestep
-        t
-            Number of timesteps for average
+        plane
+            Which plane to compute over.
         datadir
             Directory of data files.
         plotdir
@@ -205,7 +205,7 @@ def rhop_histogram(t0 = 25, t = 70,
     fig = plt.figure()
     plt.minorticks_on()
     plt.xlabel(r"$\rho_p/<\rho_p>$")
-    if normed = True:
+    if normed == True:
         plt.ylabel(r'$N(\rho_p)/N_{tot}$')
     else:
         plt.ylabel(r"$N({\rho_p})$")
@@ -242,8 +242,9 @@ def rhop_histogram(t0 = 25, t = 70,
                 break
             except FileNotFoundError:
                 print('The directory does not exist. Try again.')
-        rhop, std = ap.compute.rhop_histogram(t0,
-                                        datadir, bins, normed)
+        rhop, std = ap.compute.rhop_histogram(t0=t0,
+                                        datadir=datadir, bins=bins,
+                                        normed=normed, plane = plane)
         res = [g.x.size-6, g.z.size-6]
         npar = pd.npar / (res[0] * res[1])
         data[ndata] = [rhop, std, p.taus, p.eps_dtog, res, npar]
@@ -256,11 +257,12 @@ def rhop_histogram(t0 = 25, t = 70,
         elif setlabel == 'parameters':
             label = r'$\tau_s = {},\ \epsilon = {}$'.format(
                 data[i][2], data[i][3])
-        elif setlabel == 'np'
+        elif setlabel == 'np':
             label = r'$np = {}$'.format(data[6])
         else:
-            label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{}$'.format(
-                data[i][2], data[i][3], data[i][4][0], data[i][4][1])
+            label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{},\ np = {}$'.format(
+                data[i][2], data[i][3], data[i][4][0],
+                data[i][4][1], data[i][5])
         if add_std:
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
@@ -278,60 +280,6 @@ def rhop_histogram(t0 = 25, t = 70,
 
 #=======================================================================
 # LOCAL FUNCTIONS
-#=======================================================================
-
-def _create_density_histogram(t0, nt, datadir, bins, normed):
-    """ Local function for creating a density histogram of pencil code
-    data.
-
-    Positional Arguments:
-        t0
-            Number of timesteps for warmup
-        nt
-            Number of timesteps for average
-        datadir
-            Directory for locating data
-        bins
-            Shape of the histogram-bins
-        normed
-            If True, then plot histogram will be normalized
-    Return Values
-        mean
-            Binned averaged density
-        sigma
-            Standard deviation of the average
-    """
-    # Eric Andersson, 13-07-2017
-    import numpy as np
-    import PencilCode as pc
-    from scipy.integrate import simps
-
-    # Allocate memory
-    Nrhop = np.zeros((nt, bins.size - 1))
-    t = np.zeros(nt)
-
-    # Read data
-    dim = pc.read.dimensions(datadir = datadir)
-    ndim = (dim.nxgrid > 1) + (dim.nygrid > 1) + (dim.nzgrid > 1)
-    for i in range(0, nt):
-        f = pc.read.var(datadir = datadir, ivar = t0+i)
-        if ndim == 1:
-            Nrhop[i][:] = np.histogram(f.rhop/np.mean(f.rhop),
-                                bins = bins, normed=normed)[0]
-        elif ndim == 2:
-            Nrhop[i][:] = np.histogram(np.concatenate(
-                                            f.rhop/np.mean(f.rhop)),
-                                bins = bins, normed=normed)[0]
-        else:
-            Nrhop[i][:] = np.histogram(np.concatenate(np.concatenate(
-                                            f.rhop/np.mean(f.rhop))),
-                                bins = bins, normed=normed)[0]
-        t[i] = f.t
-
-    mean = simps(y=Nrhop, x=t, axis=0)/(t[-1] - t[0])
-    sigma2 = simps(y=Nrhop**2, x=t, axis=0)/(t[-1] - t[0]) - mean**2
-    return mean, np.sqrt(sigma2)
-
 #=======================================================================
 
 def _cumulative_distribution(t0, nt, datadir):
