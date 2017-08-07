@@ -226,6 +226,8 @@ def rhop_histogram(t0 = 25, plane = 'xz',
                                     np.log10(xlim[1]), 50)
     else:
         bins = np.linspace(xlim[0], xlim[1], 50)
+    plt.xlim(xlim)
+    plt.ylim(ylim)
 
     # Initiate variables
     data = {}
@@ -270,7 +272,7 @@ def rhop_histogram(t0 = 25, plane = 'xz',
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
                     data[i][0] + data[i][1], step='pre', alpha = 0.3)
-        plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 1,
+        plt.step(bins[:-1], data[i][0], lw = 1,
                 label = label, zorder=9)
 
         plt.legend(loc=legendloc, prop = {'size':8}, frameon=False)
