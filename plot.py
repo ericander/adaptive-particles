@@ -159,7 +159,7 @@ def cumulative_density(t0=25, t=70,
 #======================================================================
 
 def rhop_histogram(t0 = 25, plane = 'xz',
-    plotdir = './work/plots/', setlabel = None,
+    plotdir = './work/plots/', setlabel = 'default',
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
     filename = 'rhop_histogram', add_std = False, normed = False, 
     legendloc = 'best'):
@@ -264,10 +264,12 @@ def rhop_histogram(t0 = 25, plane = 'xz',
                 data[i][2], data[i][3])
         elif setlabel == 'np':
             label = r'$np = {}$'.format(data[6])
-        else:
+        elif setlabel =='default':
             label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{},\ np = {}$'.format(
                 data[i][2], data[i][3], data[i][4][0],
                 data[i][4][1], int(data[i][5]))
+        else:
+            label = setlabel[i]
         if add_std:
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],

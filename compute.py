@@ -45,7 +45,7 @@ def rhop_histogram(t0, plane, datadir, bins, normed):
     t, rhop = pc.read.slices('rhop', datadir = datadir)
 
     # Allocate memory
-    Nrhop = np.zeros((t.size, bins.size - 1))
+    Nrhop = np.zeros((t.size-t0, bins.size - 1))
     print(
     'Computes the average from t = ' + str(t[t0]) + ' to end of simulation.')
     
@@ -54,7 +54,7 @@ def rhop_histogram(t0, plane, datadir, bins, normed):
                         rhop[i][plane]),
                                 bins = bins, normed=normed)[0]
 
-    mean = simps(y=Nrhop, x=t, axis=0)/(t[-1] - t[t0])
-    sigma2 = simps(y=Nrhop**2, x=t, axis=0)/(t[-1] - t[t0]) - mean**2
-
+    mean = simps(y=Nrhop, x=t[t0:], axis=0)/(t[-1] - t[t0])
+    sigma2 = simps(y=Nrhop**2, x=t[t0:], axis=0)/(t[-1] - t[t0]) - mean**2
+    print(sigma2)
     return mean, np.sqrt(sigma2)
