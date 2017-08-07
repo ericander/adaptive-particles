@@ -161,7 +161,8 @@ def cumulative_density(t0=25, t=70,
 def rhop_histogram(t0 = 25, plane = 'xz',
     plotdir = './work/plots/', setlabel = None,
     xlim = (1e-4, 1e3), ylim = (0, 600), xlog = True, ylog = False,
-    filename = 'rhop_histogram', add_std = False, normed = False):
+    filename = 'rhop_histogram', add_std = False, normed = False, 
+    legendloc = 'best'):
     """ Plots an average of number of gridcells with certain density in
     a histogram. The function plots data from Nonlinear Streaming
     instability simulations.
@@ -194,6 +195,8 @@ def rhop_histogram(t0 = 25, plane = 'xz',
             Adds standard devtiation to the plotted lines.
         normed
             Set True to create normalized histogram.
+	legendloc
+	    Sets the location of the legend.
     """
     # Eric Andersson, 13-07-2017
     import PencilCode as pc
@@ -262,7 +265,7 @@ def rhop_histogram(t0 = 25, plane = 'xz',
         else:
             label = r'$\tau_s = {},\ \epsilon = {},\ {}\times{},\ np = {}$'.format(
                 data[i][2], data[i][3], data[i][4][0],
-                data[i][4][1], data[i][5])
+                data[i][4][1], int(data[i][5]))
         if add_std:
             col = (i/(ndata+1), i/(ndata+1), i/(ndata+1))
             plt.fill_between(bins[:-1], data[i][0]-data[i][1],
@@ -270,7 +273,7 @@ def rhop_histogram(t0 = 25, plane = 'xz',
         plt.step(bins[:-1]+0.5*(bins[1]-bins[0]), data[i][0], lw = 1,
                 label = label, zorder=9)
 
-        plt.legend(loc='best', prop = {'size':10}, frameon=False)
+        plt.legend(loc=legendloc, prop = {'size':8}, frameon=False)
 
     # Save and show the plot
     if type(filename) is str:

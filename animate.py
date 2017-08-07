@@ -301,7 +301,7 @@ def density_histogram(plane, animdir = './animations/',
             p = pc.read.parameters(datadir=datadir)
             pd = pc.read.pardim(datadir=datadir)
             g = pc.read.grid(datadir=datadir)
-            t, rhop = pc.read.slices('rhop')
+            t, rhop = pc.read.slices('rhop', datadir = datadir)
             break
         except FileNotFoundError:
             print('The directory does not exist. Try again.')
@@ -364,7 +364,7 @@ def density_histogram(plane, animdir = './animations/',
     def animate(i):
         print("\rAnimating ({:6.1%})......".format(i/t.size),
                 end='', flush=True)
-        time_text.set_text(r'Time = {0:.2f} $\Omega t$'.format(t[i]))
+        time_text.set_text(r'Time = {0:.2f} P'.format(t[i]))
         line.set_data(bins[:-1]+0.5*(bins[1]-bins[0]),
                 np.histogram(np.concatenate(rhop[i][plane]),
                     normed = normed, bins = bins)[0])
@@ -374,8 +374,8 @@ def density_histogram(plane, animdir = './animations/',
                                 frames=t.size, interval=200,
                                 blit=False, repeat = False,
                                 save_count=0)
-    anim.save(animdir + filename + '.mp4', fps = fps,
-                    extra_args=['-vcodec', 'libx264'])
+    anim.save(animdir + filename + '.gif', fps = fps,
+                    writer = 'imagemagick', extra_args=['-vcodec', 'libx264'])
     print("Done.")
     if show_off:
         plt.clear()
