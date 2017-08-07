@@ -46,7 +46,9 @@ def rhop_histogram(t0, plane, datadir, bins, normed):
 
     # Allocate memory
     Nrhop = np.zeros((t.size, bins.size - 1))
-
+    print(
+    'Computes the average from t = ' + str(t[t0]) + ' to end of simulation.')
+    
     for i in range(t0, t.size):
         Nrhop[i - t0][:] = np.histogram(np.concatenate(
                         rhop[i][plane]),
